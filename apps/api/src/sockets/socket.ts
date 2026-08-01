@@ -1,6 +1,6 @@
 import type { Server } from "socket.io";
 import { socketEvents, sendMessageSchema } from "@chatops/contracts";
-import { authenticateSocket, type AuthenticatedSocket } from "../middleware/socketAuth.js";
+import { authenticateSocket, refreshSocketProfile, type AuthenticatedSocket } from "../middleware/socketAuth.js";
 import { createMessage, isRoomMember } from "../modules/messages/message.service.js";
 import { clearPresence, getRoomPresence, setPresence } from "../redis/presence.service.js";
 
@@ -9,6 +9,15 @@ export function registerSocketHandlers(io: Server) {
   io.on("connection", (rawSocket) => {
     const socket = rawSocket as AuthenticatedSocket;
     const activeRooms = new Set<string>();
+
+    socket.on("profile_updated", async (acknowledge?: (result: unknown) => void) => {
+      try {
+        await refreshSocketProfile(socket);
+        acknowledge?.({ ok: true });
+      } catch {
+        acknowledge?.({ ok: false, error: "Unable to refresh profile" });
+      }
+    });
 
     socket.on(socketEvents.joinRoom, async ({ roomId }: { roomId: string }) => {
       if (!(await isRoomMember(roomId, socket.userId))) return socket.emit("socket_error", { error: "Room membership required" });

@@ -49,6 +49,7 @@ export const socketEvents = {
   userLeft: "user_left",
   presenceUpdate: "presence_update",
   typingUpdate: "typing_update",
+  profileUpdated: "profile_updated",
 } as const;
 
 export type SocketEventName = (typeof socketEvents)[keyof typeof socketEvents];

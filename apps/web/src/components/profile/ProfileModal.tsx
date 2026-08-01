@@ -2,6 +2,7 @@ import { SignOut, UserCircle, X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { apiFetch } from "../../lib/apiClient";
 import { saveSession, type AuthUser } from "../../stores/auth.store";
+import { socket } from "../../lib/socketClient";
 
 export function ProfileModal({ user, onSaved, onLogout, onClose }: { user: AuthUser; onSaved: (user: AuthUser) => void; onLogout: () => void; onClose: () => void }) {
   const [name, setName] = useState(user.name);
@@ -15,6 +16,7 @@ export function ProfileModal({ user, onSaved, onLogout, onClose }: { user: AuthU
       const result = await apiFetch<{ user: AuthUser }>("/auth/me", { method: "PATCH", body: JSON.stringify({ name, avatarUrl: avatarUrl.trim() || null }) });
       const token = localStorage.getItem("chatops_token");
       if (token) saveSession(token, result.user);
+      socket.emit("profile_updated");
       onSaved(result.user);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to update profile"); }
     finally { setLoading(false); }
