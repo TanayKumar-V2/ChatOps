@@ -72,4 +72,6 @@ button { border: 0; color: inherit; cursor: pointer; }
 @media (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
 @container (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
 .detail-actions button:focus-visible { outline: 2px solid #42d9bd; outline-offset: 3px; }
+.message-row { contain: layout paint; content-visibility: auto; contain-intrinsic-size: 0 84px; }
+.message-image { aspect-ratio: 360 / 220; }
 .icon-button { min-width: 44px; min-height: 44px; }.send-button { width: 44px; height: 44px; }.message-menu { width: 44px; height: 44px; top: 2px; right: 0; }.message-content { overflow-wrap: anywhere; }.modal-backdrop { overflow: auto; }.modal-card { max-height: calc(100dvh - 32px); overflow-y: auto; }.image-lightbox-dialog { position: relative; display: grid; place-items: center; max-width: min(100%, 1100px); max-height: calc(100dvh - 64px); }.image-lightbox-dialog img { max-width: 100%; max-height: calc(100dvh - 64px); }.image-lightbox-close { position: absolute; z-index: 1; top: -14px; right: -14px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #334044; border-radius: 50%; color: #f1f5f4; background: #151b1e; }.image-lightbox-close:hover { background: #293337; }.icon-button:disabled { cursor: wait; opacity: .6; }
