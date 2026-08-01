@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { ArrowRight, LockKey, Sparkle } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, LockKey, Sparkle } from "@phosphor-icons/react";
 import { apiFetch } from "../lib/apiClient";
 import { saveSession } from "../stores/auth.store";
 import { configureSocket } from "../lib/socketClient";
 
-type Props = { onAuthenticated: () => void };
+type Props = { onAuthenticated: () => void; initialMode?: "login" | "register"; onBackToLanding?: () => void };
 
-export function LoginPage({ onAuthenticated }: Props) {
-  const [mode, setMode] = useState<"login" | "register">("login");
+export function LoginPage({ onAuthenticated, initialMode = "login", onBackToLanding }: Props) {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,5 +24,5 @@ export function LoginPage({ onAuthenticated }: Props) {
   }
 
   const registering = mode === "register";
-  return <main className="auth-page"><div className="auth-card"><div className="auth-brand"><div className="brand-mark">C</div><span>ChatOps</span></div><div className="auth-icon"><Sparkle size={22} weight="fill" /></div><h1>{registering ? "Create your account" : "Welcome back"}</h1><p>{registering ? "Create an account, then invite your team to private rooms." : "Sign in to pick up where your team left off."}</p><form onSubmit={submit}>{registering && <label>Your name<input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>}<label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={registering ? "new-password" : "current-password"} minLength={8} required /></label>{error && <div className="form-error" role="alert">{error}</div>}<button className="auth-submit" disabled={loading}>{loading ? registering ? "Creating account…" : "Signing in…" : registering ? "Create account" : "Sign in"}<ArrowRight size={18} /></button></form><button className="auth-switch" onClick={() => { setMode(registering ? "login" : "register"); setError(""); }}>{registering ? "Already have an account? Sign in" : "New to ChatOps? Create an account"}</button><div className="auth-note"><LockKey size={15} /> Private rooms with secure sign-in</div></div></main>;
+  return <main className="auth-page"><div className="auth-card">{onBackToLanding && <button className="auth-back" onClick={onBackToLanding}><ArrowLeft size={15} /> Back to home</button>}<div className="auth-brand"><div className="brand-mark">C</div><span>ChatOps</span></div><div className="auth-icon"><Sparkle size={22} weight="fill" /></div><h1>{registering ? "Create your account" : "Welcome back"}</h1><p>{registering ? "Create an account, then invite your team to private rooms." : "Sign in to pick up where your team left off."}</p><form onSubmit={submit}>{registering && <label>Your name<input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>}<label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={registering ? "new-password" : "current-password"} minLength={8} required /></label>{error && <div className="form-error" role="alert">{error}</div>}<button className="auth-submit" disabled={loading}>{loading ? registering ? "Creating account…" : "Signing in…" : registering ? "Create account" : "Sign in"}<ArrowRight size={18} /></button></form><button className="auth-switch" onClick={() => { setMode(registering ? "login" : "register"); setError(""); }}>{registering ? "Already have an account? Sign in" : "New to ChatOps? Create an account"}</button><div className="auth-note"><LockKey size={15} /> Private rooms with secure sign-in</div></div></main>;
 }

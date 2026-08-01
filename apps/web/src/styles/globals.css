@@ -140,3 +140,6 @@ button { border: 0; color: inherit; cursor: pointer; }
   .message-menu { opacity: .72; }
   .message-menu:active, .message-menu:focus-visible { opacity: 1; }
 }
+
+.auth-back { display: inline-flex; align-items: center; gap: 6px; padding: 0; margin: -10px 0 22px; color: #7d8a8e; background: transparent; font-size: 11px; }
+.auth-back:hover { color: #f1f5f4; }
