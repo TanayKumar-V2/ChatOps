@@ -3,6 +3,7 @@ export type DemoMessage = {
   senderId: string;
   senderName: string;
   senderAvatarUrl?: string | null;
+  imageUrl?: string | null;
   content: string;
   createdAt: string;
   isPinned?: boolean;

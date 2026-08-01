@@ -4,7 +4,7 @@ import { neon } from "@neondatabase/serverless";
 import { env } from "../config/env.js";
 
 const sql = neon(env.DATABASE_URL);
-const migrationFiles = ["0001_initial.sql", "0002_add_auth.sql", "0003_private_room_codes.sql", "0004_message_pins.sql"];
+const migrationFiles = ["0001_initial.sql", "0002_add_auth.sql", "0003_private_room_codes.sql", "0004_message_pins.sql", "0005_message_images.sql"];
 
 async function migrate() {
   for (const filename of migrationFiles) {

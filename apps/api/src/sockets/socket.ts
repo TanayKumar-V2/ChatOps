@@ -39,7 +39,7 @@ export function registerSocketHandlers(io: Server) {
     socket.on(socketEvents.sendMessage, async (payload: unknown, acknowledge?: (result: unknown) => void) => {
       const parsed = sendMessageSchema.safeParse(payload);
       if (!parsed.success || !activeRooms.has(parsed.data.roomId)) return acknowledge?.({ ok: false, error: "Invalid message or room access" });
-      const message = await createMessage(parsed.data.roomId, socket.userId, parsed.data.content, { name: socket.userName, avatarUrl: socket.userAvatarUrl });
+      const message = await createMessage(parsed.data.roomId, socket.userId, parsed.data.content, parsed.data.imageUrl ?? null, { name: socket.userName, avatarUrl: socket.userAvatarUrl });
       const wireMessage = { ...message, createdAt: message.createdAt.toISOString() };
       io.to(parsed.data.roomId).emit(socketEvents.newMessage, wireMessage);
       acknowledge?.({ ok: true, message: wireMessage });

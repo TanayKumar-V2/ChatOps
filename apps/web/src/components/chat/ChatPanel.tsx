@@ -43,14 +43,14 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
 
   useEffect(() => { if (!isDemoMode) messageCache.set(roomId, messages); }, [messages]);
 
-  const send = (content: string) => {
+  const send = (content: string, imageUrl?: string) => {
     const pendingId = `pending-${crypto.randomUUID()}`;
-    const message: DemoMessage = { id: pendingId, senderId: currentUser?.id ?? "you", senderName: currentUser?.name ?? "You", senderAvatarUrl: currentUser?.avatarUrl, content, createdAt: "Sending…", own: true, pending: true };
+    const message: DemoMessage = { id: pendingId, senderId: currentUser?.id ?? "you", senderName: currentUser?.name ?? "You", senderAvatarUrl: currentUser?.avatarUrl, imageUrl, content, createdAt: "Sending…", own: true, pending: true };
     const hasLink = /https?:\/\/\S+/i.test(content);
     setMessages((current) => [...current, message]);
     onStatsDelta?.({ posts: 1, links: hasLink ? 1 : 0 });
     if (isDemoMode) { setMessages((current) => current.map((candidate) => candidate.id === pendingId ? { ...candidate, pending: false, createdAt: "Just now" } : candidate)); return; }
-    socket.timeout(10000).emit("send_message", { roomId, content }, (error: Error | null, result: { ok?: boolean; message?: DemoMessage } = {}) => {
+    socket.timeout(10000).emit("send_message", { roomId, content, imageUrl }, (error: Error | null, result: { ok?: boolean; message?: DemoMessage } = {}) => {
       if (error || !result.ok || !result.message) {
         setMessages((current) => current.map((candidate) => candidate.id === pendingId ? { ...candidate, pending: false, failed: true } : candidate));
         onStatsDelta?.({ posts: -1, links: hasLink ? -1 : 0 });

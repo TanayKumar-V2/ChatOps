@@ -31,6 +31,7 @@ export const messages = pgTable("messages", {
   roomId: uuid("room_id").notNull().references(() => rooms.id, { onDelete: "cascade" }),
   senderId: uuid("sender_id").notNull(),
   content: text("content").notNull(),
+  imageUrl: text("image_url"),
   isPinned: boolean("is_pinned").default(false).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({

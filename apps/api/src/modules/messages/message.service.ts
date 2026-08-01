@@ -20,6 +20,7 @@ export async function listMessages(roomId: string, before?: string, limit = 40) 
     senderName: users.name,
     senderAvatarUrl: users.avatarUrl,
     content: messages.content,
+    imageUrl: messages.imageUrl,
     isPinned: messages.isPinned,
     createdAt: messages.createdAt,
   }).from(messages)
@@ -32,8 +33,8 @@ export async function listMessages(roomId: string, before?: string, limit = 40) 
   return { messages: rows.reverse(), nextCursor: next ? encodeCursor({ createdAt: next.createdAt.toISOString(), id: next.id }) : null };
 }
 
-export async function createMessage(roomId: string, senderId: string, content: string, sender?: { name: string; avatarUrl: string | null }) {
-  const [message] = await db.insert(messages).values({ roomId, senderId, content }).returning();
+export async function createMessage(roomId: string, senderId: string, content: string, imageUrl: string | null, sender?: { name: string; avatarUrl: string | null }) {
+  const [message] = await db.insert(messages).values({ roomId, senderId, content, imageUrl }).returning();
   if (sender) return { ...message, senderName: sender.name, senderAvatarUrl: sender.avatarUrl };
   const [senderRecord] = await db.select({ name: users.name, avatarUrl: users.avatarUrl }).from(users).where(eq(users.id, senderId)).limit(1);
   return { ...message, senderName: senderRecord?.name ?? "Unknown user", senderAvatarUrl: senderRecord?.avatarUrl ?? null };
