@@ -68,3 +68,5 @@ button { border: 0; color: inherit; cursor: pointer; }
 .detail-invite { display: grid; gap: 5px; padding: 12px 0 0; margin-top: 14px; border-top: 1px solid #293337; }.detail-invite span { color: #68767a; font: 9px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .08em; }.detail-invite code { color: #8cf2df; font: 11px 'IBM Plex Mono', monospace; letter-spacing: .06em; }
 .detail-actions button { appearance: none; border-radius: 6px; color: #aebabc; background: transparent; }
 .detail-actions button:hover, .detail-actions button:focus-visible { color: #f1f5f4; background: #202a2d; outline: none; }
+@media (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
+@container (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
