@@ -8,8 +8,13 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   headers.set("Content-Type", "application/json");
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const response = await fetch(`${apiUrl}${path}`, { ...options, headers });
+  let response: Response;
+  try {
+    response = await fetch(`${apiUrl}${path}`, { ...options, headers });
+  } catch {
+    throw new Error("We couldn't reach ChatOps. Check your connection and try again.");
+  }
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error ?? "Request failed");
+  if (!response.ok) throw new Error(body.error ?? "We couldn't complete that request. Please try again.");
   return body as T;
 }

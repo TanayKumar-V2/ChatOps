@@ -21,6 +21,8 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
   const cachedMessages = messageCache.get(roomId);
   const [messages, setMessages] = useState<DemoMessage[]>(isDemoMode ? initialMessages : cachedMessages ?? []);
   const [loading, setLoading] = useState(!isDemoMode && !cachedMessages);
+  const [loadError, setLoadError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
   const [typing, setTyping] = useState(false);
   const roomName = room?.name ?? roomId;
   const roomMeta = [room?.description?.trim(), room?.memberCount !== undefined ? `${room.memberCount} members` : null].filter(Boolean).join(" · ");
@@ -31,7 +33,8 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
     const cached = messageCache.get(roomId);
     setMessages(cached ?? []);
     setLoading(!cached);
-    apiFetch<{ messages: DemoMessage[] }>(`/rooms/${roomId}/messages?limit=40`).then((result) => { if (cancelled) return; const next = result.messages.map((message) => ({ ...message, own: message.senderId === currentUser?.id, createdAt: new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) })); messageCache.set(roomId, next); setMessages(next); setLoading(false); }).catch(() => { if (!cancelled) { messageCache.set(roomId, []); setMessages([]); setLoading(false); } });
+    setLoadError("");
+    apiFetch<{ messages: DemoMessage[] }>(`/rooms/${roomId}/messages?limit=40`).then((result) => { if (cancelled) return; const next = result.messages.map((message) => ({ ...message, own: message.senderId === currentUser?.id, createdAt: new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) })); messageCache.set(roomId, next); setMessages(next); setLoading(false); }).catch(() => { if (!cancelled) { setLoadError("Check your connection and try again."); setLoading(false); } });
     socket.connect();
     socket.emit("join_room", { roomId });
     const onMessage = (message: DemoMessage) => { const incoming = { ...message, own: message.senderId === currentUser?.id, createdAt: new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }; setMessages((current) => { if (current.some((candidate) => candidate.id === incoming.id)) return current; const pending = current.find((candidate) => candidate.pending && candidate.senderId === incoming.senderId && candidate.content === incoming.content); if (pending) return current.map((candidate) => candidate.id === pending.id ? incoming : candidate); onStatsDelta?.({ posts: 1, links: /https?:\/\/\S+/i.test(incoming.content) ? 1 : 0 }); return [...current, incoming]; }); };
@@ -39,7 +42,7 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
     socket.on("new_message", onMessage);
     socket.on("typing_update", onTyping);
     return () => { cancelled = true; socket.emit("leave_room", { roomId }); socket.off("new_message", onMessage); socket.off("typing_update", onTyping); };
-  }, [roomId, currentUser?.id]);
+  }, [roomId, currentUser?.id, reloadKey]);
 
   useEffect(() => { if (!isDemoMode) messageCache.set(roomId, messages); }, [messages]);
 
@@ -75,5 +78,5 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
     } catch { /* keep the current message state when pinning fails */ }
   };
 
-  return <main className="chat-panel"><header className="chat-header"><div className="room-title"><div className="room-icon"><Hash size={20} weight="bold" /></div><div><h1>{roomName}</h1>{roomMeta && <p>{roomMeta}</p>}</div></div></header><div className="messages"><div className="date-divider"><span>Today</span></div>{messages.length ? messages.map((message) => <MessageBubble message={message} key={message.id} onTogglePin={togglePin} />) : <div className="message-empty"><strong>{loading ? "Loading messages…" : "No messages yet"}</strong><span>{loading ? "Reconnecting to room history." : "Start the conversation in this room."}</span></div>}{typing && <div className="typing-line"><span className="typing-dots"><i /><i /><i /></span> Someone is typing</div>}</div><MessageComposer onSend={send} /></main>;
+  return <main className="chat-panel"><header className="chat-header"><div className="room-title"><div className="room-icon"><Hash size={20} weight="bold" /></div><div><h1>{roomName}</h1>{roomMeta && <p>{roomMeta}</p>}</div></div></header><div className="messages"><div className="date-divider"><span>Today</span></div>{messages.length ? messages.map((message) => <MessageBubble message={message} key={message.id} onTogglePin={togglePin} />) : loadError ? <div className="message-empty" role="alert"><strong>Couldn't load messages</strong><span>{loadError}</span><button className="secondary-button" onClick={() => setReloadKey((value) => value + 1)}>Try again</button></div> : <div className="message-empty"><strong>{loading ? "Loading messages…" : "No messages yet"}</strong><span>{loading ? "Loading recent messages." : "Start the conversation here."}</span></div>}{typing && <div className="typing-line"><span className="typing-dots"><i /><i /><i /></span> Someone is typing</div>}</div><MessageComposer roomName={roomName} onSend={send} /></main>;
 }
