@@ -45,7 +45,7 @@ export function ChatPanel({ roomId, room, currentUser, onStatsDelta }: { roomId:
 
   const send = (content: string) => {
     const pendingId = `pending-${crypto.randomUUID()}`;
-    const message: DemoMessage = { id: pendingId, senderId: currentUser?.id ?? "you", senderName: currentUser?.name ?? "You", content, createdAt: "Sending…", own: true, pending: true };
+    const message: DemoMessage = { id: pendingId, senderId: currentUser?.id ?? "you", senderName: currentUser?.name ?? "You", senderAvatarUrl: currentUser?.avatarUrl, content, createdAt: "Sending…", own: true, pending: true };
     const hasLink = /https?:\/\/\S+/i.test(content);
     setMessages((current) => [...current, message]);
     onStatsDelta?.({ posts: 1, links: hasLink ? 1 : 0 });

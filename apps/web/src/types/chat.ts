@@ -2,6 +2,7 @@ export type DemoMessage = {
   id: string;
   senderId: string;
   senderName: string;
+  senderAvatarUrl?: string | null;
   content: string;
   createdAt: string;
   isPinned?: boolean;
