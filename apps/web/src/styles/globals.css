@@ -7,6 +7,7 @@ html { overflow-x: hidden; }
 body { margin: 0; min-width: 320px; overflow-x: hidden; background: #101416; }
 button, input { font: inherit; }
 button { border: 0; color: inherit; cursor: pointer; }
+:where(button, input, textarea, select, [role="button"]):focus-visible { outline: 2px solid #42d9bd; outline-offset: 3px; }
 .app-shell { display: grid; grid-template-columns: 252px minmax(0, 1fr) 264px; width: 100%; max-width: 100vw; min-height: 100dvh; overflow: hidden; background: #101416; container-type: inline-size; }
 .sidebar, .details-panel { background: #151b1e; border-color: #293337; }
 .sidebar { display: flex; flex-direction: column; padding: 24px 14px 16px; border-right: 1px solid #293337; }
@@ -67,6 +68,8 @@ button { border: 0; color: inherit; cursor: pointer; }
 .profile-modal .modal-heading { align-items: flex-start; }.profile-modal-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 12px; border-radius: 10px; color: #42d9bd; background: #42d9bd16; }.read-only-value { display: block; padding: 11px 12px; border: 1px solid #293337; border-radius: 9px; color: #718084; background: #101416; font-size: 13px; }.profile-actions-row { align-items: center; }.profile-actions-row > span { flex: 1; }.danger-button { display: inline-flex; align-items: center; gap: 6px; padding: 10px 0; color: #d6858d; background: transparent; font-size: 11px; }.danger-button:hover { color: #ffb4b9; }
 .detail-invite { display: grid; gap: 5px; padding: 12px 0 0; margin-top: 14px; border-top: 1px solid #293337; }.detail-invite span { color: #68767a; font: 9px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .08em; }.detail-invite code { color: #8cf2df; font: 11px 'IBM Plex Mono', monospace; letter-spacing: .06em; }
 .detail-actions button { appearance: none; border-radius: 6px; color: #aebabc; background: transparent; }
-.detail-actions button:hover, .detail-actions button:focus-visible { color: #f1f5f4; background: #202a2d; outline: none; }
+.detail-actions button:hover, .detail-actions button:focus-visible { color: #f1f5f4; background: #202a2d; }
 @media (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
 @container (max-width: 700px) { .mobile-topbar { display: flex; }.mobile-room-actions { display: grid; } }
+.detail-actions button:focus-visible { outline: 2px solid #42d9bd; outline-offset: 3px; }
+.icon-button { min-width: 44px; min-height: 44px; }.send-button { width: 44px; height: 44px; }.message-menu { width: 44px; height: 44px; top: 2px; right: 0; }.message-content { overflow-wrap: anywhere; }.modal-backdrop { overflow: auto; }.modal-card { max-height: calc(100dvh - 32px); overflow-y: auto; }.image-lightbox-dialog { position: relative; display: grid; place-items: center; max-width: min(100%, 1100px); max-height: calc(100dvh - 64px); }.image-lightbox-dialog img { max-width: 100%; max-height: calc(100dvh - 64px); }.image-lightbox-close { position: absolute; z-index: 1; top: -14px; right: -14px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #334044; border-radius: 50%; color: #f1f5f4; background: #151b1e; }.image-lightbox-close:hover { background: #293337; }.icon-button:disabled { cursor: wait; opacity: .6; }
