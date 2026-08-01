@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-secret-that-is-long-enough
+          CLIENT_URL: http://localhost:5173
+      - run: docker build -t chatops:${{ github.sha }} .
+      - run: docker build -f apps/web/Dockerfile -t chatops-web:${{ github.sha }} .
+      - name: Deploy to Render
+        if: github.ref == 'refs/heads/main' && env.RENDER_DEPLOY_HOOK != ''
+        run: curl --fail --silent --show-error -X POST "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
